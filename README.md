@@ -31,7 +31,7 @@ $ q krs-hash-dict-bench.q
 
 ## OS-X notes
 
-The target build a dylib that is 'weak linked', i.e. the KDB symbols are left undefined as the library is meant for inclusion in a running Q process.
+The target build a dylib that is 'weak linked', i.e. the kdb+ symbols are left undefined as the library is meant for inclusion in a running Q process.
 
 For inclusion into the Q process, this can be renamed to `.so`. e.g.
 
