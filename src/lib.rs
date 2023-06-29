@@ -1,16 +1,14 @@
-#![feature(int_to_from_bytes)]
 #![feature(box_patterns)]
-#![feature(alloc_system)]
 
-extern crate alloc_system; // use the system allocator for performance and instrumentation
 extern crate fasthash;
 extern crate rkdb;
 
-use rkdb::{
-    k::*,
-    kbindings::*,
-    types::*
-};
+use std::alloc::System;
+
+#[global_allocator]
+static A: System = System;
+
+use rkdb::{k::*, kbindings::*, types::*};
 
 use fasthash::{
     metro::{self, MetroHasher128_1, MetroHasher64_1},
@@ -29,7 +27,8 @@ pub extern "C" fn kmetro64(k: *const K) -> *const K {
         KVal::Symbol(KData::List(l)) => metrosl::<Metro64>(l),
         KVal::Dict(box ref k, box ref v) => metrokv::<Metro128>(k, v),
         _ => op_failed(k),
-    }).or_else::<u8, _>(|_| Ok(op_panic()))
+    })
+    .or_else::<u8, _>(|_| Ok(op_panic()))
     .unwrap()
 }
 
@@ -42,7 +41,8 @@ pub extern "C" fn kmetro128(k: *const K) -> *const K {
         KVal::Mixed(l) => metro128ml(l.as_slice()), // retained as a curiosity
         KVal::Dict(box ref k, box ref v) => metrokv::<Metro128>(k, v),
         _ => op_failed(k),
-    }).or_else::<u8, _>(|_| Ok(op_panic()))
+    })
+    .or_else::<u8, _>(|_| Ok(op_panic()))
     .unwrap()
 }
 
